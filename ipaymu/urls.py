@@ -3,7 +3,7 @@ from django.conf import settings
 
 
 urlpatterns = patterns('ipaymu.views',
-    url(r'^process/$', 'process_post', name='post_url'),
+    url(r'^process/$', 'process', name='process_url'),
     url(r'^notify/$', 'notify', name='notify_url'),
     url(r'^success/$', 'success_page', name='success_page'),
     url(r'^canceled/$', 'cancel_page', name='cancel_page'),

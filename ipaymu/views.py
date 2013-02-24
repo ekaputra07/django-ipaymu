@@ -3,15 +3,20 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 
 from .settings import *
+from .utils import IpaymuParamsBuilder
 
 
-def process_post(request):
+def process(request):
     """
     Process transaction request.
     """
 
     if request.method == 'POST':
-        return HttpResponse('Good.')
+        params = IpaymuParamsBuilder(request)
+
+        if params.is_valid():
+            return HttpResponse('Good.')
+        return HttpResponse('Invalid parameter.')
 
     return HttpResponse('Invalid request.')
 
