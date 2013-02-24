@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
@@ -8,7 +9,11 @@ def process_post(request):
     """
     Process transaction request.
     """
-    pass
+
+    if request.method == 'POST':
+        return HttpResponse('Good.')
+
+    return HttpResponse('Invalid request.')
 
 
 def notify(request):
@@ -39,4 +44,5 @@ def test_page(request):
     This page will contains some of common usages of Ipaymu,
     such as Donation form, Product checkout.
     """
-    return render_to_response('ipaymu/test.html', context_instance=RequestContext(request))
+    api_key = IPAYMU_APIKEY
+    return render_to_response('ipaymu/test.html', locals(), context_instance=RequestContext(request))
