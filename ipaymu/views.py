@@ -12,11 +12,9 @@ def process(request):
     """
 
     if request.method == 'POST':
-        params = IpaymuParamsBuilder(request)
-
-        if params.is_valid():
-            return HttpResponse('Good.')
-        return HttpResponse('Invalid parameter.')
+        params_builder = IpaymuParamsBuilder(request.POST)
+        params = params_builder.get_params()
+        return HttpResponse('Good.')
 
     return HttpResponse('Invalid request.')
 
@@ -49,5 +47,6 @@ def test_page(request):
     This page will contains some of common usages of Ipaymu,
     such as Donation form, Product checkout.
     """
-    api_key = IPAYMU_APIKEY
+    params_builder = IpaymuParamsBuilder(request.GET)
+    params = params_builder.get_params()
     return render_to_response('ipaymu/test.html', locals(), context_instance=RequestContext(request))
