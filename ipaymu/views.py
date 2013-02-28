@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.utils import simplejson
 
 from .settings import *
 from .utils import IpaymuParamsBuilder
@@ -12,9 +13,11 @@ def process(request):
     """
 
     if request.method == 'POST':
-        params_builder = IpaymuParamsBuilder(request.POST)
-        params = params_builder.get_params()
-        return HttpResponse('Good.')
+        params = IpaymuParamsBuilder(request.POST)
+
+        if params.is_valid():
+            return HttpResponse(str(params.cleaned_params))
+        return HttpResponse(simplejson.dumps(params.errors))
 
     return HttpResponse('Invalid request.')
 
@@ -27,7 +30,7 @@ def notify(request):
     pass
 
 
-def success_page(request):
+def return_page(request):
     """
     Page that displayed when transaction success. 
     You mostly will say thank you here.
@@ -47,6 +50,4 @@ def test_page(request):
     This page will contains some of common usages of Ipaymu,
     such as Donation form, Product checkout.
     """
-    params_builder = IpaymuParamsBuilder(request.GET)
-    params = params_builder.get_params()
     return render_to_response('ipaymu/test.html', locals(), context_instance=RequestContext(request))

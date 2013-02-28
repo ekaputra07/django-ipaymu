@@ -1,7 +1,7 @@
 from django.conf import settings
 
 # iPaymu API KEY
-IPAYMU_APIKEY = getattr(settings, 'IPAYMU_APIKEY','need-your-ipaymu-api-key')
+IPAYMU_APIKEY = getattr(settings, 'IPAYMU_APIKEY', None)
 
 # Urls
 IPAYMU_RETURN_URL = getattr(settings, 'IPAYMU_RETURN_URL', '/ipaymu/success/')
