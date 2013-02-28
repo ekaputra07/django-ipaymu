@@ -1,6 +1,9 @@
 from django.core.urlresolvers import reverse
 import settings
 
+from forms import IpaymuForm
+
+
 class InvalidIpaymuParams(Exception):
     pass
 
@@ -48,6 +51,13 @@ class IpaymuParamsBuilder(object):
         """
 
         self.params = {
+            # These parameters must provided via form
+            'product': self.data.get('product', 'n/a'),
+            'price': self.data.get('price', 0),
+            'quantity': self.data.get('quantity', 0),
+            'comments': self.data.get('comments', ''),
+
+            # These parameters can be overrided via form 
             'key': self.data.get('key', settings.IPAYMU_APIKEY),
             'action': self.data.get('action', settings.IPAYMU_ACTION),
             'unotify': reverse('notify_url'),
@@ -58,19 +68,12 @@ class IpaymuParamsBuilder(object):
 
         if self.data.get('accept_paypal'):
             self.params.update({
-                'invoice_number': self.data.get('invoice_number', None),
+                'invoice_number': self.data.get('invoice_number', 'n/a'),
                 'paypal_email': self.data.get('paypal_email', settings.IPAYMU_PAYPAL_EMAIL),
                 'paypal_price': self.data.get('paypal_price'),
             })
 
-    def _validate_params(self):
-        """
-        Validate params to ensure 
-        """
-        raise InvalidIpaymuParams('Field tidak valid.')
-
     def get_params(self):
         """ Validate and return Ipaymu params"""
-        self._validate_params()
         return self.params
         

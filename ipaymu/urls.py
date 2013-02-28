@@ -1,5 +1,10 @@
-from django.conf.urls import patterns, include, url
 from django.conf import settings
+
+try:
+    from django.conf.urls import patterns, include, url
+except:
+    # Support for Django < 1.4
+    from django.conf.urls.defaults import patterns, include, url
 
 
 urlpatterns = patterns('ipaymu.views',
