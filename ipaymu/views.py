@@ -19,7 +19,7 @@ def process(request):
         params = IpaymuParamsBuilder(request)
 
         if params.is_valid():
-            
+
             # In case of connection/request error
             try:
                 req = requests.post(settings.IPAYMU_REQUEST_URL, data=params.cleaned_params)
@@ -27,23 +27,21 @@ def process(request):
                 return HttpResponse('Request timeout!.')
             except ConnectionError:
                 return HttpResponse('Connection Error!.')
-            else:
-                # In case of empty response/Json Encode error
-                try:
-                    resp_json = req.json()
-                except:
-                    return HttpResponse('Empty response received!.')
-                else:
-                    payment_url = resp_json.get('url')
 
-                    if payment_url:
-                        # on_session_receieved callback must go here, before redirect to Ipaymu
-                        return HttpResponseRedirect(payment_url)
+            # In case of empty response/Json Encode error
+            try:
+                resp_json = req.json()
+            except:
+                return HttpResponse('Empty response received!.')
 
-                    return HttpResponse(req.text)
+            payment_url = resp_json.get('url')
+            if payment_url:
+                # on_session_receieved callback must go here, before redirect to Ipaymu
+                return HttpResponseRedirect(payment_url)
+            return HttpResponse(req.text)
 
         return HttpResponse(simplejson.dumps(params.errors))
-
+        
     return HttpResponse('Invalid request.')
 
 
