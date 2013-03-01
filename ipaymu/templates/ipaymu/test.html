@@ -3,16 +3,16 @@
     {% csrf_token %}
     <p><strong>Below value must be provided via form.</strong></p>
     Product: <input type="text" name="product" value="Test product"/><br>
-    Price: <input type="text" name="price" value="10"/><br>
+    Price: <input type="text" name="price" value="5000"/><br>
     Qty.: <input type="text" name="quantity" value="1"/><br>
     Comments: <textarea name="comments">This is comment..</textarea><br>
 
     <p><strong>Below value can be provided via Settings, or override it via form.</strong></p>
-    API Key: <input type="text" name="key" value="your-api-key"/><br>
-    Action: <input type="text" name="action" value="payment"/><br>
-    URL Return/Success: <input type="text" name="ureturn" value="{% url ipaymu_return_url %}"/><br>
-    URL cancel: <input type="text" name="ucancel" value="{% url ipaymu_cancel_url %}"/><br>
-    Format (json/xml): <input type="text" name="format" value="json"/><br>
+    API Key: <input type="text" name="key" value=""/><br>
+    Action: <input type="text" name="action" value=""/> eg. payment<br>
+    URL Return/Success: <input type="text" name="ureturn" value=""/><br>
+    URL cancel: <input type="text" name="ucancel" value=""/><br>
+    Format: <input type="text" name="format" value=""/> (json/xml)<br>
 
     <p><strong>Below value is optional, if Paypal email available, paypal price and invoice number will be validated.</strong></p>
     Paypal Email: <input type="text" name="paypal_email" value=""/><br>

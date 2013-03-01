@@ -19,9 +19,9 @@ class IpaymuForm(forms.Form):
     key = forms.CharField()
     action = forms.CharField()
 
-    unotify = forms.CharField()
-    ureturn = forms.CharField()
-    ucancel = forms.CharField()
+    unotify = forms.URLField()
+    ureturn = forms.URLField()
+    ucancel = forms.URLField()
     format = forms.ChoiceField(choices=FORMAT_CHOICES)
 
     invoice_number = forms.CharField(required=False)

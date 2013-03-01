@@ -10,8 +10,6 @@ except:
 urlpatterns = patterns('ipaymu.views',
     url(r'^process/$', 'process', name='ipaymu_process_url'),
     url(r'^notify/$', 'notify', name='ipaymu_notify_url'),
-    url(r'^return/$', 'return_page', name='ipaymu_return_url'),
-    url(r'^canceled/$', 'cancel_page', name='ipaymu_cancel_url'),
 )
 
 # Ipaymu test page available only in Debug mode.

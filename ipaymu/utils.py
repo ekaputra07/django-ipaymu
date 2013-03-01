@@ -1,6 +1,7 @@
 from django.core.urlresolvers import reverse
-import settings
+from django.contrib.sites.models import get_current_site
 
+import settings
 from forms import IpaymuForm
 
 
@@ -14,12 +15,14 @@ class IpaymuParamsBuilder(object):
     raw_params = None
     cleaned_params = None
     errors = None
+    request = None
 
-    def __init__(self, post_data):
+    def __init__(self, request):
         """
         Get Ipaymu request params from current request object (POST).
         """
-        self.data = post_data
+        self.request = request
+        self.data = request.POST
         self._build_params()
 
     def _build_params(self):
@@ -68,7 +71,9 @@ class IpaymuParamsBuilder(object):
             'invoice_number': self.data.get('invoice_number', 'n/a'),
             'paypal_price': self.data.get('paypal_price'),
 
-            'unotify': reverse('ipaymu_notify_url'),
+            'unotify': settings.IPAYMU_NOTIFY_URL or ('%s%s%s' % (settings.SITE_PROTOCOL,
+                                    get_current_site(self.request).domain,
+                                    reverse('ipaymu_notify_url'))),
         }
         return
 

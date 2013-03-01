@@ -1,10 +1,13 @@
-from django.http import HttpResponse
+import requests
+from requests.exceptions import Timeout, ConnectionError
+
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils import simplejson
 
-from .settings import *
-from .utils import IpaymuParamsBuilder
+import settings
+from utils import IpaymuParamsBuilder
 
 
 def process(request):
@@ -13,10 +16,32 @@ def process(request):
     """
 
     if request.method == 'POST':
-        params = IpaymuParamsBuilder(request.POST)
+        params = IpaymuParamsBuilder(request)
 
         if params.is_valid():
-            return HttpResponse(str(params.cleaned_params))
+            
+            # In case of connection/request error
+            try:
+                req = requests.post(settings.IPAYMU_REQUEST_URL, data=params.cleaned_params)
+            except Timeout:
+                return HttpResponse('Request timeout!.')
+            except ConnectionError:
+                return HttpResponse('Connection Error!.')
+            else:
+                # In case of empty response/Json Encode error
+                try:
+                    resp_json = req.json()
+                except:
+                    return HttpResponse('Empty response received!.')
+                else:
+                    payment_url = resp_json.get('url')
+
+                    if payment_url:
+                        # on_session_receieved callback must go here, before redirect to Ipaymu
+                        return HttpResponseRedirect(payment_url)
+
+                    return HttpResponse(req.text)
+
         return HttpResponse(simplejson.dumps(params.errors))
 
     return HttpResponse('Invalid request.')
@@ -28,22 +53,6 @@ def notify(request):
     the transaction has been success.
     """
     pass
-
-
-def return_page(request):
-    """
-    Page that displayed when transaction success. 
-    You mostly will say thank you here.
-    """
-    return render_to_response('ipaymu/success.html', context_instance=RequestContext(request))
-
-
-def cancel_page(request):
-    """
-    Page that will displayed if Ipaymu payment canceled.
-    """
-    return render_to_response('ipaymu/cancel.html', context_instance=RequestContext(request))
-
 
 def test_page(request):
     """
