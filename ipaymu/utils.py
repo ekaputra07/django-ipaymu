@@ -60,16 +60,21 @@ class IpaymuParamsBuilder(object):
             'quantity': self.data.get('quantity', 0),
             'comments': self.data.get('comments', ''),
 
-            # These parameters can be overrided via form
+            # These parameters can be overrided via form or settings
             'key': self.data.get('key') or settings.IPAYMU_APIKEY,
             'action': self.data.get('action') or settings.IPAYMU_ACTION,
-            'ureturn': self.data.get('ureturn') or settings.IPAYMU_RETURN_URL,
-            'ucancel': self.data.get('ucancel') or settings.IPAYMU_CANCEL_URL,
             'format': self.data.get('format') or settings.IPAYMU_RETURN_FORMAT,
-
             'paypal_email': self.data.get('paypal_email') or settings.IPAYMU_PAYPAL_EMAIL,
             'invoice_number': self.data.get('invoice_number', 'n/a'),
             'paypal_price': self.data.get('paypal_price'),
+
+            'ureturn': settings.IPAYMU_RETURN_URL or ('%s%s%s' % (settings.SITE_PROTOCOL,
+                                    get_current_site(self.request).domain,
+                                    reverse('ipaymu_return_url'))),
+
+            'ucancel': settings.IPAYMU_CANCEL_URL or ('%s%s%s' % (settings.SITE_PROTOCOL,
+                                    get_current_site(self.request).domain,
+                                    reverse('ipaymu_cancel_url'))),
 
             'unotify': settings.IPAYMU_NOTIFY_URL or ('%s%s%s' % (settings.SITE_PROTOCOL,
                                     get_current_site(self.request).domain,
@@ -78,6 +83,7 @@ class IpaymuParamsBuilder(object):
         return
 
     def is_valid(self):
+        """ Check if data posted is valid"""
 
         params = IpaymuForm(self.raw_params)
 
@@ -92,3 +98,8 @@ class IpaymuParamsBuilder(object):
         """ Validate and return Ipaymu params"""
         return self.params
         
+
+def execute_callback(name, *args):
+    """ Execute provided callback """
+    calbacks = settings.IPAYMU_CALLBACKS
+    return

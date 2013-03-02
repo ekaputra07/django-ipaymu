@@ -7,7 +7,7 @@ from django.template import RequestContext
 from django.utils import simplejson
 
 import settings
-from utils import IpaymuParamsBuilder
+from utils import IpaymuParamsBuilder, execute_callback
 
 
 def process(request):
@@ -36,8 +36,10 @@ def process(request):
 
             payment_url = resp_json.get('url')
             if payment_url:
-                # on_session_receieved callback must go here, before redirect to Ipaymu
+                # Execute callback when sessionID received.
+                execute_callback('session_received', request, resp_json.get('sessionID'))
                 return HttpResponseRedirect(payment_url)
+
             return HttpResponse(req.text)
 
         return HttpResponse(simplejson.dumps(params.errors))
@@ -50,11 +52,25 @@ def notify(request):
     This view point will be called by the iPaymu server on the background to notify
     the transaction has been success.
     """
-    pass
+    if request.method == 'POST':
+        execute_callback('notification_received', request, request.POST)
+    # Just return an empty response to avoid No Response error
+    return HttpResponse('')
+
+
+def return_page(request):
+    """ Return page for Ipaymu transaction"""
+    return render_to_response('ipaymu/return.html', context_instance=RequestContext(request))
+
+
+def cancel_page(request):
+    """ Cancel page for Ipaymu transaction"""
+    return render_to_response('ipaymu/cancel.html', context_instance=RequestContext(request))
+
 
 def test_page(request):
     """
     This page will contains some of common usages of Ipaymu,
     such as Donation form, Product checkout.
     """
-    return render_to_response('ipaymu/test.html', locals(), context_instance=RequestContext(request))
+    return render_to_response('ipaymu/test.html', context_instance=RequestContext(request))

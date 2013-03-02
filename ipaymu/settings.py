@@ -22,3 +22,10 @@ IPAYMU_PAYPAL_EMAIL = getattr(settings, 'IPAYMU_PAYPAL_EMAIL', None)
 
 # Transaction type
 IPAYMU_ACTION = getattr(settings, 'IPAYMU_ACTION', 'payment')
+
+# Ipaymu Callback
+IPAYMU_CALLBACKS = getattr(settings, 'IPAYMU_CALLBACKS',{
+            'session_received': None,
+            'notification_received': None,
+        }
+    )
