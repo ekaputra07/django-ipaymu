@@ -68,23 +68,22 @@ class IpaymuParamsBuilder(object):
             'invoice_number': self.data.get('invoice_number', 'n/a'),
             'paypal_price': self.data.get('paypal_price'),
 
-            'ureturn': settings.IPAYMU_RETURN_URL or ('%s%s%s' % (settings.SITE_PROTOCOL,
+            'ureturn': self.data.get('ureturn') or settings.IPAYMU_RETURN_URL or ('%s%s%s' % (settings.SITE_PROTOCOL,
                                     get_current_site(self.request).domain,
                                     reverse('ipaymu_return_url'))),
 
-            'ucancel': settings.IPAYMU_CANCEL_URL or ('%s%s%s' % (settings.SITE_PROTOCOL,
+            'ucancel': self.data.get('ucancel') or settings.IPAYMU_CANCEL_URL or ('%s%s%s' % (settings.SITE_PROTOCOL,
                                     get_current_site(self.request).domain,
                                     reverse('ipaymu_cancel_url'))),
 
-            'unotify': settings.IPAYMU_NOTIFY_URL or ('%s%s%s' % (settings.SITE_PROTOCOL,
+            'unotify': '%s%s%s' % (settings.SITE_PROTOCOL,
                                     get_current_site(self.request).domain,
-                                    reverse('ipaymu_notify_url'))),
+                                    reverse('ipaymu_notify_url')),
         }
         return
 
     def is_valid(self):
         """ Check if data posted is valid"""
-
         params = IpaymuForm(self.raw_params)
 
         if params.is_valid():

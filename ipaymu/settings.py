@@ -10,7 +10,6 @@ IPAYMU_REQUEST_URL = getattr(settings, 'IPAYMU_REQUEST_URL', 'https://my.ipaymu.
 IPAYMU_APIKEY = getattr(settings, 'IPAYMU_APIKEY', None)
 
 # Urls
-IPAYMU_NOTIFY_URL = getattr(settings, 'IPAYMU_NOTIFY_URL', None)
 IPAYMU_RETURN_URL = getattr(settings, 'IPAYMU_RETURN_URL', None)
 IPAYMU_CANCEL_URL = getattr(settings, 'IPAYMU_CANCEL_URL', None)
 
