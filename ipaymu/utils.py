@@ -1,13 +1,13 @@
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import get_current_site
+from django.utils.importlib import import_module
 
-import settings
-from forms import IpaymuForm
+from ipaymu import settings
+from ipaymu.forms import IpaymuForm
+from ipaymu.models import IpaymuSessionID
 
-
-class InvalidIpaymuParams(Exception):
+class IpaymuCallbackError(Exception):
     pass
-
 
 class IpaymuParamsBuilder(object):
 
@@ -101,5 +101,42 @@ class IpaymuParamsBuilder(object):
 
 def execute_callback(name, *args):
     """ Execute provided callback """
-    calbacks = settings.IPAYMU_CALLBACKS
+
+    callbacks = settings.IPAYMU_CALLBACKS
+    callback_string = callbacks.get(name)
+
+    if callback_string and isinstance(callback_string, basestring):
+        # Fail silently when callback error
+        # Just notify via log console.
+
+        # Split callback namespace to module and its function
+        ns = callback_string.split('.')
+        callback_func = ns[-1]
+        callback_module_str = '.'.join(ns[:-1])
+
+        try:
+            callback_module = import_module(callback_module_str)
+            getattr(callback_module, callback_func)(*args)
+        except ImportError as e:
+            raise IpaymuCallbackError('Could not import Ipaymu callback module \'%s\'' % (callback_module_str))
+        except AttributeError as e:
+            raise IpaymuCallbackError('\'%s\' has no attribute \'%s\'' % (callback_module_str, callback_func))
     return
+
+
+def save_session(sessid):
+    """ Save received session ID to database """
+
+    session = IpaymuSessionID(sessid=sessid)
+    session.save()
+    return
+
+
+def verify_session(sessid):
+    """ Verify session ID that come from Ipaymu notification request """
+    
+    try:
+        session = IpaymuSessionID.objects.get(sessid=sessid)
+    except IpaymuSessionID.DoesNotExist:
+        return False
+    return True

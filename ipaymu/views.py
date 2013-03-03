@@ -1,13 +1,14 @@
 import requests
 from requests.exceptions import Timeout, ConnectionError
 
+from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils import simplejson
 
-import settings
-from utils import IpaymuParamsBuilder, execute_callback
+from ipaymu import settings
+from ipaymu.utils import IpaymuParamsBuilder, execute_callback, save_session, verify_session
 
 
 def process(request):
@@ -36,6 +37,8 @@ def process(request):
 
             payment_url = resp_json.get('url')
             if payment_url:
+                # Save session ID
+                save_session(resp_json.get('sessionID'))
                 # Execute callback when sessionID received.
                 execute_callback('session_received', request, resp_json.get('sessionID'))
                 return HttpResponseRedirect(payment_url)
@@ -47,13 +50,17 @@ def process(request):
     return HttpResponse('Invalid request.')
 
 
+@csrf_exempt
 def notify(request):
     """
     This view point will be called by the iPaymu server on the background to notify
     the transaction has been success.
     """
     if request.method == 'POST':
-        execute_callback('notification_received', request, request.POST)
+        # Excecute callback if session ID verified.
+        # Since we did't disable CSRF protection for this view.
+        if(verify_session(request.POST.get('sid'))):
+            execute_callback('notification_received', request, request.POST)
     # Just return an empty response to avoid No Response error
     return HttpResponse('')
 
