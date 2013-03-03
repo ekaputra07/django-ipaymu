@@ -60,7 +60,7 @@ def notify(request):
         # Excecute callback if session ID verified.
         # Since we did't disable CSRF protection for this view.
         if(verify_session(request.POST.get('sid'))):
-            execute_callback('notification_received', request, request.POST)
+            execute_callback('notification_received', request, dict(request.POST))
     # Just return an empty response to avoid No Response error
     return HttpResponse('')
 

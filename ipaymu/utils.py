@@ -137,6 +137,8 @@ def verify_session(sessid):
     
     try:
         session = IpaymuSessionID.objects.get(sessid=sessid)
+        session.verified=True
+        session.save()
     except IpaymuSessionID.DoesNotExist:
         return False
     return True
