@@ -92,10 +92,6 @@ class IpaymuParamsBuilder(object):
 
         self.errors = params.errors
         return False
-
-    def get_params(self):
-        """ Validate and return Ipaymu params"""
-        return self.params
         
 
 def execute_callback(name, *args):
