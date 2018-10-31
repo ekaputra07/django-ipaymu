@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.utils import simplejson
+import json
 
 from ipaymu import settings
 from ipaymu.utils import IpaymuParamsBuilder, execute_callback, save_session, verify_session
@@ -45,7 +45,7 @@ def process(request):
 
             return HttpResponse(req.text)
 
-        return HttpResponse(simplejson.dumps(params.errors))
+        return HttpResponse(json.dumps(params.errors))
         
     return HttpResponse('Invalid request.')
 
