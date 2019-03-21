@@ -30,7 +30,7 @@ Fitur
 Requirement
 -----------
 
-* Django 1.8+
+* Django 1.9+
 * Requests 1.1.0 (http://docs.python-requests.org/en/latest/)
 
 Instalasi
