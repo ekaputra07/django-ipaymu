@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse
-from django.contrib.sites.models import get_current_site
-from django.utils.importlib import import_module
+from django.contrib.sites.shortcuts import get_current_site
+from importlib import import_module
 
 from ipaymu import settings
 from ipaymu.forms import IpaymuForm
